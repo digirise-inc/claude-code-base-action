@@ -11,11 +11,13 @@ export function validateEnvironmentVariables() {
   const errors: string[] = [];
 
   // Check for multiple authentication methods
-  const authMethodsCount = [useBedrock, useVertex, useOAuth].filter(
+  // Note: claude_credentials is a way to provide OAuth credentials, not a separate method
+  const hasRawCreds = !!process.env.INPUT_CLAUDE_CREDENTIALS;
+  const authMethodsCount = [useBedrock, useVertex, useOAuth && !hasRawCreds].filter(
     Boolean,
   ).length;
-  const hasRawCreds = !!process.env.INPUT_CLAUDE_CREDENTIALS;
-  if (authMethodsCount + (hasRawCreds ? 1 : 0) > 1) {
+  const totalAuthMethods = authMethodsCount + (hasRawCreds ? 1 : 0);
+  if (totalAuthMethods > 1) {
     errors.push(
       "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, use_oauth, or claude_credentials.",
     );
