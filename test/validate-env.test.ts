@@ -232,7 +232,7 @@ describe("validateEnvironmentVariables", () => {
       process.env.CLOUD_ML_REGION = "us-central1";
 
       expect(() => validateEnvironmentVariables()).toThrow(
-        "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, or use_oauth.",
+        "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, use_oauth, or claude_credentials.",
       );
     });
 
@@ -248,7 +248,7 @@ describe("validateEnvironmentVariables", () => {
       process.env.AWS_SECRET_ACCESS_KEY = "test-secret-key";
 
       expect(() => validateEnvironmentVariables()).toThrow(
-        "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, or use_oauth.",
+        "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, use_oauth, or claude_credentials.",
       );
     });
 
@@ -263,7 +263,7 @@ describe("validateEnvironmentVariables", () => {
       process.env.CLOUD_ML_REGION = "us-central1";
 
       expect(() => validateEnvironmentVariables()).toThrow(
-        "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, or use_oauth.",
+        "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, use_oauth, or claude_credentials.",
       );
     });
 
@@ -273,7 +273,7 @@ describe("validateEnvironmentVariables", () => {
       process.env.CLAUDE_CODE_USE_VERTEX = "1";
 
       expect(() => validateEnvironmentVariables()).toThrow(
-        "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, or use_oauth.",
+        "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, use_oauth, or claude_credentials.",
       );
     });
   });

@@ -14,19 +14,20 @@ export function validateEnvironmentVariables() {
   const authMethodsCount = [useBedrock, useVertex, useOAuth].filter(
     Boolean,
   ).length;
-  if (authMethodsCount > 1) {
+  const hasRawCreds = !!process.env.INPUT_CLAUDE_CREDENTIALS;
+  if (authMethodsCount + (hasRawCreds ? 1 : 0) > 1) {
     errors.push(
-      "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, or use_oauth.",
+      "Cannot use multiple authentication methods simultaneously. Please set only one of: use_bedrock, use_vertex, use_oauth, or claude_credentials.",
     );
   }
 
-  if (!useBedrock && !useVertex && !useOAuth) {
+  if (!useBedrock && !useVertex && !useOAuth && !hasRawCreds) {
     if (!anthropicApiKey) {
       errors.push(
         "ANTHROPIC_API_KEY is required when using direct Anthropic API.",
       );
     }
-  } else if (useOAuth) {
+  } else if (useOAuth && !hasRawCreds) {
     const requiredOAuthVars = {
       CLAUDE_ACCESS_TOKEN: process.env.CLAUDE_ACCESS_TOKEN,
       CLAUDE_REFRESH_TOKEN: process.env.CLAUDE_REFRESH_TOKEN,

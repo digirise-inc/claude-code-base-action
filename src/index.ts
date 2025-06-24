@@ -11,7 +11,11 @@ async function run() {
     validateEnvironmentVariables();
 
     // Setup OAuth credentials if using OAuth authentication
-    if (process.env.CLAUDE_CODE_USE_OAUTH === "1") {
+    // Skip if raw credentials JSON was already written by the composite step
+    if (
+      process.env.CLAUDE_CODE_USE_OAUTH === "1" &&
+      !process.env.INPUT_CLAUDE_CREDENTIALS
+    ) {
       await setupOAuthCredentials({
         accessToken: process.env.CLAUDE_ACCESS_TOKEN!,
         refreshToken: process.env.CLAUDE_REFRESH_TOKEN!,

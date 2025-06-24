@@ -72,6 +72,10 @@ inputs:
     description: "Claude AI OAuth token expiration timestamp (required when use_oauth is true)"
     required: false
     default: ""
+  claude_credentials:
+    description: "Full JSON string for ~/.claude/.credentials.json (overrides individual OAuth vars)"
+    required: false
+    default: ""
 
   use_node_cache:
     description: "Whether to use Node.js dependency caching (set to true only for Node.js projects with lock files)"
@@ -111,15 +115,15 @@ runs:
       run: |
         # Self-hosted runner対応: 徹底的なクリーンアップ
         npm uninstall -g @anthropic-ai/claude-code 2>/dev/null || true
-        
+
         # 残存ファイルを手動削除（self-hosted runnerで必要）
         NPM_GLOBAL_ROOT=$(npm root -g 2>/dev/null || echo "/usr/local/lib/node_modules")
         rm -rf "$NPM_GLOBAL_ROOT/@anthropic-ai/claude-code" 2>/dev/null || true
         rm -rf "$NPM_GLOBAL_ROOT/@anthropic-ai/.claude-code-"* 2>/dev/null || true
-        
+
         # npmキャッシュクリア
         npm cache clean --force 2>/dev/null || true
-        
+
         # forceオプション付きでインストール
         npm install -g @anthropic-ai/claude-code@latest --force
 
@@ -127,6 +131,13 @@ runs:
       shell: bash
       id: run_claude
       run: |
+        # Setup OAuth credentials from raw JSON if provided
+        if [ -n "${{ inputs.claude_credentials }}" ]; then
+          mkdir -p "$HOME/.claude"
+          printf '%s' "${{ inputs.claude_credentials }}" > "$HOME/.claude/.credentials.json"
+          echo "Wrote OAuth credentials from claude_credentials input"
+        fi
+
         bun run ${{ github.action_path }}/src/index.ts
       env:
         # Model configuration
@@ -151,6 +162,7 @@ runs:
         CLAUDE_ACCESS_TOKEN: ${{ inputs.claude_access_token }}
         CLAUDE_REFRESH_TOKEN: ${{ inputs.claude_refresh_token }}
         CLAUDE_EXPIRES_AT: ${{ inputs.claude_expires_at }}
+        INPUT_CLAUDE_CREDENTIALS: ${{ inputs.claude_credentials }}
 
         # AWS configuration
         AWS_REGION: ${{ env.AWS_REGION }}
